@@ -42,28 +42,31 @@ public class SparkController implements InitializingBean {
 	private LinkedList<SparkRoom> rooms = new LinkedList<SparkRoom>();
 	private LinkedList<SparkWebhook> webhooks = new LinkedList<SparkWebhook>();
 	 
+	
+	private LinkedList<SparkNotification> notifications = new LinkedList<SparkNotification>();
+	
 	/*
 	 * the webhoox that I'm using..... registered on init
 	 */
-	@RequestMapping("/spark/test")
+	@RequestMapping("/spark/notify")
 	public String sparkHook( @RequestBody SparkNotification notification ) {
 		tom_logger.info("Incoming Sparks request");
 
+		notifications.addFirst( notification );
 		
-		
-		
-		
-		
-		
+		if ( notifications.size() > 10 )
+		{
+			notifications.removeLast();
+		}
 		// Send Message to me
-		RestTemplate restTemplate = new RestTemplate( new SparkAuthorizedClientRequestFactory(accessToken) );
+		//RestTemplate restTemplate = new RestTemplate( new SparkAuthorizedClientRequestFactory(accessToken) );
 		
-		SparkMessageData messageOut = new SparkMessageData()
-				.setText( "you received a message from : " + notification.getMessageData().getPersonId()  + " in : "+ notification.getMessageData().getRoomId() )
-				.setPersonId(TomBurnley);
+		//SparkMessageData messageOut = new SparkMessageData()
+		//		.setText( "you received a message from : " + notification.getMessageData().getPersonId()  + " in : "+ notification.getMessageData().getRoomId() )
+		//		.setPersonId(TomBurnley);
 
     			
-		messageOut = restTemplate.postForObject("https://api.ciscospark.com/v1/messages", messageOut, SparkMessageData.class );
+		//messageOut = restTemplate.postForObject("https://api.ciscospark.com/v1/messages", messageOut, SparkMessageData.class );
 											  
 		return "This is a String";
 	}
@@ -75,7 +78,7 @@ public class SparkController implements InitializingBean {
 		
 		
 		SparkMessageData message = new SparkMessageData()
-				.setText("Hello - I'm alive")
+				.setText("Hello - I have " + notifications.size() + " notifications")
 				.setPersonId(TomBurnley);
 
     			
@@ -106,6 +109,14 @@ public class SparkController implements InitializingBean {
 	@RequestMapping("/spark/webhooks")
 	public @ResponseBody ResponseEntity<List<SparkWebhook>> getHooks( ) {
 		return new ResponseEntity<List<SparkWebhook>> (webhooks, HttpStatus.OK); 
+	}
+	
+	/*
+	 * List the notifications I've had  
+	 */
+	@RequestMapping("/spark/notifications")
+	public @ResponseBody ResponseEntity<List<SparkNotification>> getNotifications( ) {
+		return new ResponseEntity<List<SparkNotification>> (notifications, HttpStatus.OK); 
 	}
 
 	
@@ -150,7 +161,7 @@ public class SparkController implements InitializingBean {
 	        	tom_logger.warn( "No Registered Hook - Adding... " );
 	        	SparkWebhook newHook = new SparkWebhook().setEvent("created")
 	        			.setName(HOOK_NAME)
-	        			.setTargetUrl("http://staging--shippedapplic--shippedservice--18165a.gce.shipped-cisco.com/spark/test")
+	        			.setTargetUrl("http://staging--shippedapplic--shippedservice--18165a.gce.shipped-cisco.com/spark/notify")
 	        			.setResource("messages")
 	        			.setSecret("pingpong");
 	        	
