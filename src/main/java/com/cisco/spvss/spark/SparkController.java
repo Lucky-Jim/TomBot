@@ -71,7 +71,7 @@ public class SparkController implements InitializingBean {
 		return "This is a String   ";
 	}
 	
-	@Scheduled( cron="0 * * * * MON-FRI" )
+	@Scheduled( cron="0 0 * * * MON-FRI" )
     public void reportCurrentTime() {
 		// Send Message
 		RestTemplate restTemplate = new RestTemplate( new SparkAuthorizedClientRequestFactory(accessToken) );
