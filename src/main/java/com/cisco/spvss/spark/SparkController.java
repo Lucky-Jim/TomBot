@@ -68,7 +68,7 @@ public class SparkController implements InitializingBean {
     			
 		//messageOut = restTemplate.postForObject("https://api.ciscospark.com/v1/messages", messageOut, SparkMessageData.class );
 											  
-		return "This is a String";
+		return "This is a String   ";
 	}
 	
 	@Scheduled( cron="0 * * * * MON-FRI" )
